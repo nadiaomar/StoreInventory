@@ -5,11 +5,21 @@ import re
 import random
 import psycopg2
 
+import mysql.connector as mysql
+
 conn = None
 cur = None
 
 try:
-	conn = psycopg2.connect("dbname='nhdinventory' user='postgres' host='localhost' password='test123'")
+	# conn = psycopg2.connect("dbname='nhdinventory' user='postgres' host='localhost' password='test123'")
+
+	DBUSER = 'nadia'
+	DBPASS = 'test123'
+	DBHOST = 'localhost'
+	DBNAME = 'inventory'
+
+
+	conn = mysql.connect(user=DBUSER, password=DBPASS, host=DBHOST, database=DBNAME)
 	cur = conn.cursor()
 
 except:
@@ -36,13 +46,13 @@ for d in spad:
 
 	name = atag.getText().strip().encode('utf8')
 	URL = atag.get('href')
-response = requests.get(index_url)
-soup = bs4.BeautifulSoup(response.text)
+	response = requests.get(index_url)
+	soup = bs4.BeautifulSoup(response.text)
 
 
-content = soup.find("div", { "id" : "content" })
+	content = soup.find("div", { "id" : "content" })
 
-core = content.find("div", {'id': 'plp_core'})
+	core = content.find("div", {'id': 'plp_core'})
 
 
 
@@ -71,6 +81,10 @@ core = content.find("div", {'id': 'plp_core'})
 	main = p_description.find('div', {'class': 'main_description'})
 
 	description = main.find('p', {'class':'normal'}).getText().strip().encode('utf8')
+
+	si = "'"
+	replacement = ""
+	description = re.sub(si, replacement, description)
 
 	command1 = "INSERT INTO Inventory (sku, onhand, instock) VALUES ('{}', {}, {})"
 
